@@ -6,14 +6,14 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 
 // You might need to insert additional domains in script-src if you are using external services
 const ContentSecurityPolicy = `
-  default-src 'self';
-  script-src 'self' 'unsafe-eval' 'unsafe-inline' giscus.app analytics.umami.is;
+  default-src 'self' https://www.youtube.com;
+  script-src 'self' 'unsafe-eval' 'unsafe-inline' giscus.app analwww.tics.umami.is https://www.youtube.com;
   style-src 'self' 'unsafe-inline';
   img-src * blob: data:;
-  media-src *.s3.amazonaws.com;
+  media-src *.youtube.com;
   connect-src *;
   font-src 'self';
-  frame-src giscus.app
+  frame-src giscus.app https://www.youtube-nocookie.com https://www.youtube.com https://www.youtube.com/embed/;
 `
 
 const securityHeaders = [
@@ -27,11 +27,11 @@ const securityHeaders = [
     key: 'Referrer-Policy',
     value: 'strict-origin-when-cross-origin',
   },
-  // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
-  {
-    key: 'X-Frame-Options',
-    value: 'DENY',
-  },
+  // // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
+  // {
+  //   key: 'X-Frame-Options',
+  //   value: 'DENY',
+  // },
   // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options
   {
     key: 'X-Content-Type-Options',
@@ -56,6 +56,7 @@ const securityHeaders = [
 
 const output = process.env.EXPORT ? 'export' : undefined
 const basePath = process.env.BASE_PATH || undefined
+// console.log('NEXT CONFIG: BASE_PATH =', process.env.BASE_PATH)
 const unoptimized = process.env.UNOPTIMIZED ? true : undefined
 
 /**
