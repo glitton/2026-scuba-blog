@@ -21,20 +21,27 @@ const layouts = {
   PostBanner,
 }
 
-export async function generateMetadata(props: {
-  params: Promise<{ slug: string[] }>
+type Params = { year: string; slug: string }
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Params
 }): Promise<Metadata | undefined> {
-  const params = await props.params
-  const slug = decodeURI(params.slug.join('/'))
-  const post = allBlogs.find((p) => p.slug === slug)
+  const { year, slug } = params
+  const slugDec = decodeURI(slug)
+  const post = allBlogs.find(
+    (p) => String(p.startYear ?? new Date(p.date).getFullYear()) === year && p.slug === slugDec
+  )
+  if (!post) {
+    return
+  }
+
   const authorList = post?.authors || ['default']
   const authorDetails = authorList.map((author) => {
     const authorResults = allAuthors.find((p) => p.slug === author)
     return coreContent(authorResults as Authors)
   })
-  if (!post) {
-    return
-  }
 
   const publishedAt = new Date(post.date).toISOString()
   const modifiedAt = new Date(post.lastmod || post.date).toISOString()
@@ -74,29 +81,39 @@ export async function generateMetadata(props: {
 }
 
 export const generateStaticParams = async () => {
-  return allBlogs.map((p) => ({ slug: p.slug.split('/').map((name) => decodeURI(name)) }))
+  return allBlogs.map((p) => ({
+    year: String(p.startYear ?? new Date(p.date).getFullYear()),
+    slug: p.slug,
+  }))
 }
 
-export default async function Page(props: { params: Promise<{ slug: string[] }> }) {
-  const params = await props.params
-  const slug = decodeURI(params.slug.join('/'))
+export default async function Page({ params }: { params: Params }) {
+  const { year, slug } = params
+  const slugDec = decodeURI(slug)
+
   // Filter out drafts in production
   const sortedCoreContents = allCoreContent(sortPosts(allBlogs))
-  const postIndex = sortedCoreContents.findIndex((p) => p.slug === slug)
+  const postIndex = sortedCoreContents.findIndex(
+    (p) => p.slug === slugDec && String(p.startYear ?? new Date(p.date).getFullYear()) === year
+  )
   if (postIndex === -1) {
     return notFound()
   }
 
   const prev = sortedCoreContents[postIndex + 1]
   const next = sortedCoreContents[postIndex - 1]
-  const post = allBlogs.find((p) => p.slug === slug) as Blog
+  const post = allBlogs.find(
+    (p) => String(p.startYear ?? new Date(p.date).getFullYear()) === year && p.slug === slugDec
+  ) as Blog
+  if (!post) return notFound()
+
   const authorList = post?.authors || ['default']
   const authorDetails = authorList.map((author) => {
     const authorResults = allAuthors.find((p) => p.slug === author)
     return coreContent(authorResults as Authors)
   })
   const mainContent = coreContent(post)
-  const jsonLd = post.structuredData
+  const jsonLd = post.structuredData || {}
   jsonLd['author'] = authorDetails.map((author) => {
     return {
       '@type': 'Person',

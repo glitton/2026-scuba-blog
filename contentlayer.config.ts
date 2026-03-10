@@ -57,6 +57,12 @@ const computedFields: ComputedFields = {
     resolve: (doc) => doc._raw.sourceFilePath,
   },
   toc: { type: 'json', resolve: (doc) => extractTocHeadings(doc.body.raw) },
+  startYear: {
+    type: 'number',
+    resolve: (doc) =>
+      // prefer explicit frontmatter.startYear if present, otherwise derive from date
+      (doc as any).startYear ? Number((doc as any).startYear) : new Date(doc.date).getFullYear(),
+  },
 }
 
 /**
