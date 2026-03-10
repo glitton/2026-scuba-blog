@@ -2,11 +2,11 @@
 const siteMetadata = {
   title: 'Generosa Scuba Blog starting 2026',
   author: 'Generosa',
-  headerTitle: 'Scuba Diving Adventures 2026 and Beyond',
+  headerTitle: 'Scuba Diving Adventures',
   description: 'Sharing the wonders of the ocean',
   language: 'en-us',
   theme: 'system', // system, dark or light
-  siteUrl: 'https://blog.glcodeworks.com/latest',
+  siteUrl: 'https://blog.glcodeworks.com',
   siteRepo: 'https://github.com/glitton/2026-scuba-blog',
   siteLogo: 'glcodeworks-logo.svg',
   socialBanner: '/static/images/twitter-card.png',
