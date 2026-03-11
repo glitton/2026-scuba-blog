@@ -26,9 +26,9 @@ type Params = { year: string; slug: string }
 export async function generateMetadata({
   params,
 }: {
-  params: Params
+  params: Params | Promise<Params>
 }): Promise<Metadata | undefined> {
-  const { year, slug } = params
+  const { year, slug } = await params
   const slugDec = decodeURI(slug)
   const post = allBlogs.find(
     (p) => String(p.startYear ?? new Date(p.date).getFullYear()) === year && p.slug === slugDec
@@ -87,8 +87,8 @@ export const generateStaticParams = async () => {
   }))
 }
 
-export default async function Page({ params }: { params: Params }) {
-  const { year, slug } = params
+export default async function Page({ params }: { params: Params | Promise }) {
+  const { year, slug } = await params
   const slugDec = decodeURI(slug)
 
   // Filter out drafts in production
