@@ -22,13 +22,9 @@ const layouts = {
 }
 
 type Params = { year: string; slug: string }
-
-export async function generateMetadata({
-  params,
-}: {
-  params: Params | Promise<Params>
-}): Promise<Metadata | undefined> {
-  const { year, slug } = await params
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function generateMetadata({ params }: { params: any }): Promise<Metadata | undefined> {
+  const { year, slug } = (await params) as Params
   const slugDec = decodeURI(slug)
   const post = allBlogs.find(
     (p) => String(p.startYear ?? new Date(p.date).getFullYear()) === year && p.slug === slugDec
@@ -86,9 +82,9 @@ export const generateStaticParams = async () => {
     slug: p.slug,
   }))
 }
-
-export default async function Page({ params }: { params: Params | Promise }) {
-  const { year, slug } = await params
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default async function Page({ params }: { params: any }) {
+  const { year, slug } = (await params) as Params
   const slugDec = decodeURI(slug)
 
   // Filter out drafts in production
