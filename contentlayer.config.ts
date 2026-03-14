@@ -46,11 +46,19 @@ const computedFields: ComputedFields = {
   readingTime: { type: 'json', resolve: (doc) => readingTime(doc.body.raw) },
   slug: {
     type: 'string',
-    resolve: (doc) => doc._raw.flattenedPath.replace(/^.+?(\/)/, ''),
+    resolve: (doc) => {
+      const year = String(doc.startYear ?? new Date(doc.date).getFullYear())
+      const rawSlug = String(doc.slug ?? doc._raw.flattenedPath)
+      const slugOnly = rawSlug.includes('/') ? rawSlug.split('/').pop() : rawSlug
+      return `stories/${year}/${slugOnly}`
+    },
   },
   path: {
     type: 'string',
-    resolve: (doc) => doc._raw.flattenedPath,
+    resolve: (doc) => {
+      const rawSlug = String(doc.slug ?? doc._raw.flattenedPath)
+      return rawSlug.includes('/') ? rawSlug.split('/').pop() : rawSlug
+    },
   },
   filePath: {
     type: 'string',
@@ -118,6 +126,22 @@ export const Blog = defineDocumentType(() => ({
   },
   computedFields: {
     ...computedFields,
+    slugOnly: {
+      type: 'string',
+      resolve: (doc) => {
+        const rawSlug = String(doc.slug ?? doc._raw.flattenedPath)
+        return rawSlug.includes('/') ? rawSlug.split('/').pop()! : rawSlug
+      },
+    },
+    url: {
+      type: 'string',
+      resolve: (doc) => {
+        const year = String(doc.startYear ?? new Date(doc.date).getFullYear())
+        const rawSlug = String(doc.slug ?? doc._raw.flattenedPath)
+        const slugOnly = rawSlug.includes('/') ? rawSlug.split('/').pop()! : rawSlug
+        return `${siteMetadata.siteUrl}/stories/${year}/${slugOnly}`
+      },
+    },
     structuredData: {
       type: 'json',
       resolve: (doc) => ({
@@ -128,7 +152,13 @@ export const Blog = defineDocumentType(() => ({
         dateModified: doc.lastmod || doc.date,
         description: doc.summary,
         image: doc.images ? doc.images[0] : siteMetadata.socialBanner,
-        url: `${siteMetadata.siteUrl}/${doc._raw.flattenedPath}`,
+        url: `${siteMetadata.siteUrl}/stories/${String(doc.startYear ?? new Date(doc.date).getFullYear())}/${
+          String(doc.slug ?? doc._raw.flattenedPath).includes('/')
+            ? String(doc.slug ?? doc._raw.flattenedPath)
+                .split('/')
+                .pop()
+            : String(doc.slug ?? doc._raw.flattenedPath)
+        }`,
       }),
     },
   },
