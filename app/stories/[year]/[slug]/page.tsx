@@ -52,6 +52,8 @@ export async function generateMetadata({ params }: { params: any }): Promise<Met
     }
   })
 
+  const canonical = `https://blog.glcodeworks.com/stories/${year}/${post.slug}`
+
   return {
     title: post.title,
     description: post.summary,
@@ -63,7 +65,7 @@ export async function generateMetadata({ params }: { params: any }): Promise<Met
       type: 'article',
       publishedTime: publishedAt,
       modifiedTime: modifiedAt,
-      url: './',
+      url: canonical,
       images: ogImages,
       authors: authors.length > 0 ? authors : [siteMetadata.author],
     },
@@ -73,14 +75,19 @@ export async function generateMetadata({ params }: { params: any }): Promise<Met
       description: post.summary,
       images: imageList,
     },
+    alternates: {
+      canonical,
+    },
   }
 }
 
 export const generateStaticParams = async () => {
-  return allBlogs.map((p) => ({
-    year: String(p.startYear ?? new Date(p.date).getFullYear()),
-    slug: p.slug,
-  }))
+  return allBlogs.map((p) => {
+    const year = String(p.startYear ?? new Date(p.date).getFullYear())
+    const rawSlug = String(p.slug)
+    const slug = rawSlug.includes('/') ? rawSlug.split('/').pop()! : rawSlug
+    return { year, slug }
+  })
 }
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default async function Page({ params }: { params: any }) {
