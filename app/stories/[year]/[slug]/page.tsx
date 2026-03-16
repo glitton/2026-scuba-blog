@@ -52,7 +52,8 @@ export async function generateMetadata({ params }: { params: any }): Promise<Met
     }
   })
 
-  const canonical = `https://blog.glcodeworks.com/stories/${year}/${post.slug}`
+  const slugOnly = String(post.slug).includes('/') ? post.slug.split('/').pop() : post.slug
+  const canonical = `https://blog.glcodeworks.com/stories/${year}/${slugOnly}`
 
   return {
     title: post.title,
@@ -96,18 +97,28 @@ export default async function Page({ params }: { params: any }) {
 
   // Filter out drafts in production
   const sortedCoreContents = allCoreContent(sortPosts(allBlogs))
-  const postIndex = sortedCoreContents.findIndex(
-    (p) => p.slug === slugDec && String(p.startYear ?? new Date(p.date).getFullYear()) === year
-  )
+
+  const normalizeSlug = (raw: string) => (raw.includes('/') ? raw.split('/').pop()! : raw)
+
+  const postIndex = sortedCoreContents.findIndex((p) => {
+    const pYear = String(p.startYear ?? new Date(p.date).getFullYear())
+    const pSlug = normalizeSlug(String(p.slug))
+    return pYear === year && pSlug === slugDec
+  })
+
   if (postIndex === -1) {
     return notFound()
   }
 
   const prev = sortedCoreContents[postIndex + 1]
   const next = sortedCoreContents[postIndex - 1]
-  const post = allBlogs.find(
-    (p) => String(p.startYear ?? new Date(p.date).getFullYear()) === year && p.slug === slugDec
-  ) as Blog
+
+  const post = allBlogs.find((p) => {
+    const pYear = String(p.startYear ?? new Date(p.date).getFullYear())
+    const pSlug = normalizeSlug(String(p.slug))
+    return pYear === year && pSlug === slugDec
+  }) as Blog
+
   if (!post) return notFound()
 
   const authorList = post?.authors || ['default']
@@ -126,15 +137,19 @@ export default async function Page({ params }: { params: any }) {
 
   const Layout = layouts[post.layout || defaultLayout]
 
+  console.log('post debug', {
+    title: post.title,
+    slug: post.slug,
+    hasBody: !!post.body,
+    bodyKeys: Object.keys(post.body || {}),
+  })
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <Layout content={mainContent} authorDetails={authorDetails} next={next} prev={prev}>
-        <MDXLayoutRenderer code={post.body.code} components={components} toc={post.toc} />
-      </Layout>
     </>
   )
 }

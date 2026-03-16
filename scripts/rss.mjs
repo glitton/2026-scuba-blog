@@ -9,17 +9,23 @@ import { sortPosts } from 'pliny/utils/contentlayer.js'
 
 const outputFolder = process.env.EXPORT ? 'out' : 'public'
 
-const generateRssItem = (config, post) => `
+const generateRssItem = (config, post) => {
+  const year = post.startYear ?? new Date(post.date).getFullYear()
+  const rawSlug = String(post.slug)
+  const slugOnly = rawSlug.includes('/') ? rawSlug.split('/').pop() : rawSlug
+
+  return `
   <item>
-    <guid>${config.siteUrl}/blog/${post.slug}</guid>
+    <guid>${config.siteUrl}/stories/${year}/${slugOnly}</guid>
     <title>${escape(post.title)}</title>
-    <link>${config.siteUrl}/blog/${post.slug}</link>
+    <link>${config.siteUrl}/stories/${year}/${slugOnly}</link>
     ${post.summary && `<description>${escape(post.summary)}</description>`}
     <pubDate>${new Date(post.date).toUTCString()}</pubDate>
     <author>${config.email} (${config.author})</author>
     ${post.tags && post.tags.map((t) => `<category>${t}</category>`).join('')}
   </item>
-`
+  `
+}
 
 const generateRss = (config, posts, page = 'feed.xml') => `
   <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">

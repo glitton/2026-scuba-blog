@@ -13,7 +13,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     .map((post: Blog & { startYear?: number }) => {
       const year = String(post.startYear ?? new Date(post.date).getFullYear())
       return {
-        url: `${siteUrl}/stories/${year}/${post.slug}`,
+        url:
+          post.url ||
+          `${siteUrl}/stories/${year}/${String(post.slug).includes('/') ? post.slug.split('/').pop() : post.slug}`,
         lastModified: post.lastmod || post.date,
       }
     })
