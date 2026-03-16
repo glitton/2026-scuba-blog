@@ -1,10 +1,11 @@
+import dynamic from 'next/dynamic'
 import siteMetadata from '@/data/siteMetadata'
 import headerNavLinks from '@/data/headerNavLinks'
 import Logo from '@/data/glcodeworks-logo.svg'
 import Link from './Link'
-import MobileNav from './MobileNav'
 import ThemeSwitch from './ThemeSwitch'
 import SearchButton from './SearchButton'
+import MobileNavNoSSR from './MobileNavNoSSR'
 
 const Header = () => {
   let headerClass = 'flex items-center w-full bg-white dark:bg-gray-950 justify-between py-10'
@@ -44,7 +45,7 @@ const Header = () => {
         </div>
         <SearchButton />
         <ThemeSwitch />
-        <MobileNav />
+        <MobileNavNoSSR />
       </div>
     </header>
   )

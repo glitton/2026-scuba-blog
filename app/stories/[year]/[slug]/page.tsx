@@ -1,3 +1,4 @@
+import dynamic from 'next/dynamic'
 import 'css/prism.css'
 import 'katex/dist/katex.css'
 
@@ -13,6 +14,7 @@ import PostBanner from '@/layouts/PostBanner'
 import { Metadata } from 'next'
 import siteMetadata from '@/data/siteMetadata'
 import { notFound } from 'next/navigation'
+import MDXLayoutRendererClient from '@/components/MDXLayoutRendererClient'
 
 const defaultLayout = 'PostLayout'
 const layouts = {
