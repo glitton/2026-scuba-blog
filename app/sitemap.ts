@@ -13,12 +13,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     .map((post: Blog & { startYear?: number }) => {
       const year = String(post.startYear ?? new Date(post.date).getFullYear())
       return {
-        url: `${siteUrl}/blog/${year}/${post.slug}`,
+        url: `${siteUrl}/stories/${year}/${post.slug}`,
         lastModified: post.lastmod || post.date,
       }
     })
 
-  const routes = ['', 'blog', 'projects', 'tags'].map((route) => ({
+  const routes = ['', 'stories', 'projects', 'tags'].map((route) => ({
     url: `${siteUrl}/${route}`,
     lastModified: new Date().toISOString().split('T')[0],
   }))
