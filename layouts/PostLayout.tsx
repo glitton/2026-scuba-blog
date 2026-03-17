@@ -25,8 +25,8 @@ const postDateTemplate: Intl.DateTimeFormatOptions = {
 interface LayoutProps {
   content: CoreContent<Blog>
   authorDetails: CoreContent<Authors>[]
-  next?: { path: string; title: string }
-  prev?: { path: string; title: string }
+  next?: CoreContent<Blog>
+  prev?: CoreContent<Blog>
   children: ReactNode
 }
 
@@ -131,7 +131,7 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
                     {prev &&
                       prev.path &&
                       (() => {
-                        const { path: prevPath } = getPostPath(prev as any)
+                        const { path: prevPath } = getPostPath(prev)
                         return (
                           <div>
                             <h2 className="text-xs tracking-wide text-gray-500 uppercase dark:text-gray-400">
@@ -146,7 +146,7 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
                     {next &&
                       next.path &&
                       (() => {
-                        const { path: nextPath } = getPostPath(next as any)
+                        const { path: nextPath } = getPostPath(next)
                         return (
                           <div>
                             <h2 className="text-xs tracking-wide text-gray-500 uppercase dark:text-gray-400">
