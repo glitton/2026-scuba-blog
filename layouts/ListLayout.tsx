@@ -8,6 +8,9 @@ import type { Blog } from 'contentlayer/generated'
 import Link from '@/components/Link'
 import Tag from '@/components/Tag'
 import siteMetadata from '@/data/siteMetadata'
+import { getPostPath } from '@/lib/postPath'
+
+const { path: postPath } = getPostPath(post)
 
 interface PaginationProps {
   totalPages: number
@@ -131,7 +134,7 @@ export default function ListLayout({
                   <div className="space-y-3 xl:col-span-3">
                     <div>
                       <h3 className="text-2xl leading-8 font-bold tracking-tight">
-                        <Link href={`/${path}`} className="text-gray-900 dark:text-gray-100">
+                        <Link href={postPath} className="text-gray-900 dark:text-gray-100">
                           {title}
                         </Link>
                       </h3>
