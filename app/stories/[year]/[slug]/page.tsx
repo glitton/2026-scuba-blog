@@ -75,12 +75,15 @@ export async function generateMetadata({ params }: { params: any }): Promise<Met
     },
   }
 }
-
 export const generateStaticParams = async () => {
-  return allBlogs.map((p) => ({
-    year: String(p.startYear ?? new Date(p.date).getFullYear()),
-    slug: p.slug,
-  }))
+  return allBlogs
+    .map((p) => {
+      const year = String((p as any).startYear ?? new Date(p.date).getFullYear())
+      const raw = String((p as any).slug ?? (p as any)._raw?.flattenedPath ?? '')
+      const slug = raw.includes('/') ? raw.split('/').pop() : raw
+      return { year, slug }
+    })
+    .filter(({ slug }) => !!slug) // drop entries with empty slug
 }
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default async function Page({ params }: { params: any }) {
@@ -118,6 +121,14 @@ export default async function Page({ params }: { params: any }) {
   })
 
   const Layout = layouts[post.layout || defaultLayout]
+
+  console.log(
+    allBlogs.map((p) => ({
+      title: p.title,
+      rawSlug: (p as any).slug ?? (p as any)._raw?.flattenedPath,
+      startYear: (p as any).startYear,
+    }))
+  )
 
   return (
     <>

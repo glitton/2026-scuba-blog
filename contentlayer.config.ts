@@ -46,11 +46,21 @@ const computedFields: ComputedFields = {
   readingTime: { type: 'json', resolve: (doc) => readingTime(doc.body.raw) },
   slug: {
     type: 'string',
-    resolve: (doc) => doc._raw.flattenedPath.replace(/^.+?(\/)/, ''),
+    resolve: (doc) => {
+      const raw = String(doc._raw?.flattenedPath ?? doc.slug ?? '')
+      return raw.includes('/') ? raw.split('/').pop() : raw
+    },
+  },
+  slugOnly: {
+    type: 'string',
+    resolve: (doc) => {
+      const raw = String(doc._raw?.flattenedPath ?? doc.slug ?? '')
+      return raw.includes('/') ? raw.split('/').pop() : raw
+    },
   },
   path: {
     type: 'string',
-    resolve: (doc) => doc._raw.flattenedPath,
+    resolve: (doc) => String(doc._raw?.flattenedPath ?? ''),
   },
   filePath: {
     type: 'string',
@@ -60,8 +70,16 @@ const computedFields: ComputedFields = {
   startYear: {
     type: 'number',
     resolve: (doc) =>
-      // prefer explicit frontmatter.startYear if present, otherwise derive from date
       (doc as any).startYear ? Number((doc as any).startYear) : new Date(doc.date).getFullYear(),
+  },
+  url: {
+    type: 'string',
+    resolve: (doc) => {
+      const year = String(doc.startYear ?? new Date(doc.date).getFullYear())
+      const raw = String(doc._raw?.flattenedPath ?? doc.slug ?? '')
+      const slugOnly = raw.includes('/') ? raw.split('/').pop() : raw
+      return `${siteMetadata.siteUrl.replace(/\/$/, '')}/stories/${year}/${slugOnly}`
+    },
   },
 }
 
@@ -116,11 +134,13 @@ export const Blog = defineDocumentType(() => ({
     bibliography: { type: 'string' },
     canonicalUrl: { type: 'string' },
   },
-  computedFields: {
-    ...computedFields,
-    structuredData: {
-      type: 'json',
-      resolve: (doc) => ({
+  structuredData: {
+    type: 'json',
+    resolve: (doc) => {
+      const year = String(doc.startYear ?? new Date(doc.date).getFullYear())
+      const raw = String(doc._raw?.flattenedPath ?? doc.slug ?? '')
+      const slugOnly = raw.includes('/') ? raw.split('/').pop() : raw
+      return {
         '@context': 'https://schema.org',
         '@type': 'BlogPosting',
         headline: doc.title,
@@ -128,8 +148,8 @@ export const Blog = defineDocumentType(() => ({
         dateModified: doc.lastmod || doc.date,
         description: doc.summary,
         image: doc.images ? doc.images[0] : siteMetadata.socialBanner,
-        url: `${siteMetadata.siteUrl}/${doc._raw.flattenedPath}`,
-      }),
+        url: `${siteMetadata.siteUrl.replace(/\/$/, '')}/stories/${year}/${slugOnly}`,
+      }
     },
   },
 }))
