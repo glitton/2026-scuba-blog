@@ -9,6 +9,7 @@ import Image from '@/components/Image'
 import Tag from '@/components/Tag'
 import siteMetadata from '@/data/siteMetadata'
 import ScrollTopAndComment from '@/components/ScrollTopAndComment'
+import { getPostPath } from '../lib/postPath'
 
 const editUrl = (path) => `${siteMetadata.siteRepo}/blob/main/data/${path}`
 const discussUrl = (path) =>
@@ -130,23 +131,14 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
                     {prev &&
                       prev.path &&
                       (() => {
-                        const year = String(
-                          (prev as any).startYear ?? new Date((prev as any).date).getFullYear()
-                        )
-                        const rawPrev = String(
-                          (prev as any).slug ??
-                            (prev as any).path ??
-                            (prev as any)._raw?.flattenedPath ??
-                            ''
-                        )
-                        const slugPrev = rawPrev.includes('/') ? rawPrev.split('/').pop() : rawPrev
+                        const { path: prevPath } = getPostPath(prev as any)
                         return (
                           <div>
                             <h2 className="text-xs tracking-wide text-gray-500 uppercase dark:text-gray-400">
                               Previous Article
                             </h2>
                             <div className="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400">
-                              <Link href={`/stories/${year}/${slugPrev}`}>{prev.title}</Link>
+                              <Link href={prevPath}>{prev.title}</Link>
                             </div>
                           </div>
                         )
@@ -154,23 +146,14 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
                     {next &&
                       next.path &&
                       (() => {
-                        const year = String(
-                          (next as any).startYear ?? new Date((next as any).date).getFullYear()
-                        )
-                        const rawNext = String(
-                          (next as any).slug ??
-                            (next as any).path ??
-                            (next as any)._raw?.flattenedPath ??
-                            ''
-                        )
-                        const slugNext = rawNext.includes('/') ? rawNext.split('/').pop() : rawNext
+                        const { path: nextPath } = getPostPath(next as any)
                         return (
                           <div>
                             <h2 className="text-xs tracking-wide text-gray-500 uppercase dark:text-gray-400">
                               Next Article
                             </h2>
                             <div className="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400">
-                              <Link href={`/stories/${year}/${slugNext}`}>{next.title}</Link>
+                              <Link href={nextPath}>{next.title}</Link>
                             </div>
                           </div>
                         )

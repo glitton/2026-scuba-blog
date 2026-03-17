@@ -9,6 +9,7 @@ import Link from '@/components/Link'
 import Tag from '@/components/Tag'
 import siteMetadata from '@/data/siteMetadata'
 import tagData from 'app/tag-data.json'
+import { getPostPath } from '../lib/postPath'
 
 interface PaginationProps {
   totalPages: number
@@ -127,15 +128,8 @@ export default function ListLayoutWithTags({
             <ul>
               {displayPosts.map((post) => {
                 const { path, date, title, summary, tags } = post
-                // normalize year + slug (fall back safely)
-                const year = String((post as any).startYear ?? new Date(date).getFullYear())
-                const raw = String(
-                  (post as any).slug ??
-                    (post as any).path ??
-                    (post as any)._raw?.flattenedPath ??
-                    ''
-                )
-                const slugOnly = raw.includes('/') ? raw.split('/').pop() : raw
+                const { path: postPath } = getPostPath(post)
+
                 return (
                   <li key={path} className="py-5">
                     <article className="flex flex-col space-y-2 xl:space-y-0">
@@ -150,10 +144,7 @@ export default function ListLayoutWithTags({
                       <div className="space-y-3">
                         <div>
                           <h2 className="text-2xl leading-8 font-bold tracking-tight">
-                            <Link
-                              href={`/stories/${year}/${slugOnly}`}
-                              className="text-gray-900 dark:text-gray-100"
-                            >
+                            <Link href={postPath} className="text-gray-900 dark:text-gray-100">
                               {title}
                             </Link>
                           </h2>

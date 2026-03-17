@@ -8,9 +8,7 @@ import type { Blog } from 'contentlayer/generated'
 import Link from '@/components/Link'
 import Tag from '@/components/Tag'
 import siteMetadata from '@/data/siteMetadata'
-import { getPostPath } from '@/lib/postPath'
-
-const { path: postPath } = getPostPath(post)
+import { getPostPath } from '../lib/postPath'
 
 interface PaginationProps {
   totalPages: number
@@ -122,6 +120,7 @@ export default function ListLayout({
           {!filteredBlogPosts.length && 'No posts found.'}
           {displayPosts.map((post) => {
             const { path, date, title, summary, tags } = post
+            const { path: postPath } = getPostPath(post)
             return (
               <li key={path} className="py-4">
                 <article className="space-y-2 xl:grid xl:grid-cols-4 xl:items-baseline xl:space-y-0">
