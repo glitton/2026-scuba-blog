@@ -5396,6 +5396,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"disqus-react@npm:^1.1.7":
+  version: 1.1.7
+  resolution: "disqus-react@npm:1.1.7"
+  peerDependencies:
+    react: ^15.6.1 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+    react-dom: ^15.6.1 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+  checksum: ad72dc9f2328b33d92768e479faa0d0da502e91810e0918e17893cf4ff6daef18339c5454fd409bd64afb2bdf56d0524edf7766cdd204d50a2561a51440912b8
+  languageName: node
+  linkType: hard
+
 "doctrine@npm:^2.1.0":
   version: 2.1.0
   resolution: "doctrine@npm:2.1.0"
@@ -11593,6 +11603,7 @@ __metadata:
     body-scroll-lock: ^3.1.5
     contentlayer2: 0.5.8
     cross-env: ^10.1.0
+    disqus-react: ^1.1.7
     esbuild: 0.27.3
     eslint: ^9.18.0
     eslint-config-next: 15.5.12
